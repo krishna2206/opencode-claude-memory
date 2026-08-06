@@ -1,0 +1,44 @@
+{
+  "name": "opencode-claude-memory",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "OpenCode plugin: shared local Markdown memory with Claude Code, injected once per session (cache-friendly).",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "bun test"
+  },
+  "keywords": [
+    "opencode",
+    "opencode-plugin",
+    "claude",
+    "claude-code",
+    "claude-code-memory",
+    "memory",
+    "persistent-memory",
+    "local-first",
+    "markdown-memory"
+  ],
+  "license": "MIT",
+  "peerDependencies": {
+    "@opencode-ai/plugin": "*"
+  },
+  "devDependencies": {
+    "@opencode-ai/plugin": "^1.18.14",
+    "@types/node": "^26.1.2",
+    "typescript": "^6.0.3",
+    "zod": "^3.25.76"
+  }
+}
