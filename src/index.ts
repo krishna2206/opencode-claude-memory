@@ -117,12 +117,16 @@ export const MemoryPlugin: Plugin = async ({ worktree, directory }) => {
           query: tool.schema.string().describe("Search query — searches across name, description, and content"),
         },
         async execute(args) {
-          const results = searchMemories(memoryRoot, args.query)
+          const results = searchMemories(memoryRoot, args.query, 8)
           if (results.length === 0) return `No memories matching "${args.query}".`
           const lines = results.map(
-            (e) => `- **${e.name}** (${e.type}) [${e.fileName}]: ${e.description}\n  Content: ${e.content.slice(0, 200)}${e.content.length > 200 ? "..." : ""}`,
+            (e) =>
+              `- **${e.name}** (${e.type}) [${e.fileName}]: ${e.description}\n  Content: ${e.content.slice(0, 250)}${e.content.length > 250 ? "..." : ""}`,
           )
-          return `${results.length} matches for "${args.query}":\n${lines.join("\n")}`
+          const formatted = `${results.length} matches for "${args.query}":\n${lines.join("\n")}`
+          return formatted.length > 6000
+            ? formatted.slice(0, 6000) + "\n\n*(results truncated to 6 KB)*"
+            : formatted
         },
       }),
 

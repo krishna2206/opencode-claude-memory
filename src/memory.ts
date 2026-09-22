@@ -168,16 +168,53 @@ export function deleteMemory(worktree: string, fileName: string): boolean {
   }
 }
 
-export function searchMemories(worktree: string, query: string): MemoryEntry[] {
+export function searchMemories(worktree: string, query: string, limit = 8): MemoryEntry[] {
   const all = listMemories(worktree)
   const lowerQuery = query.toLowerCase()
 
-  return all.filter(
-    (entry) =>
-      entry.name.toLowerCase().includes(lowerQuery) ||
-      entry.description.toLowerCase().includes(lowerQuery) ||
-      entry.content.toLowerCase().includes(lowerQuery),
-  )
+  return all
+    .filter(
+      (entry) =>
+        entry.name.toLowerCase().includes(lowerQuery) ||
+        entry.description.toLowerCase().includes(lowerQuery) ||
+        entry.content.toLowerCase().includes(lowerQuery),
+    )
+    .slice(0, limit)
+}
+
+export function getActiveRulesInline(worktree: string, maxBytes = 14_000): string {
+  const entries = listMemories(worktree)
+  const activeRules = entries
+    .filter((e) => e.type === "user" || e.type === "feedback")
+    .sort((a, b) => {
+      if (a.type === "user" && b.type !== "user") return -1
+      if (b.type === "user" && a.type !== "user") return 1
+      return a.name.localeCompare(b.name)
+    })
+
+  if (activeRules.length === 0) return ""
+
+  const sections: string[] = []
+  let totalBytes = 0
+
+  for (const rule of activeRules) {
+    const desc = rule.description ? `> *${rule.description}*\n\n` : ""
+    const block = `### ${rule.name} (${rule.type})\n${desc}${rule.content.trim()}\n`
+    const blockSize = Buffer.byteLength(block, "utf-8")
+
+    if (totalBytes + blockSize > maxBytes) {
+      const remaining = activeRules.length - sections.length
+      sections.push(
+        `*(+${remaining} more active rule(s) omitted to respect token budget. Use memory_search or memory_read)*`,
+      )
+      break
+    }
+
+    sections.push(block)
+    totalBytes += blockSize
+  }
+
+  return sections.join("\n")
 }
 
 export function readIndex(worktree: string): string {
