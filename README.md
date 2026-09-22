@@ -17,17 +17,28 @@ Unlike other memory plugins, it has no shell wrapper, no `.zshrc` hook, and no b
 
 ## Install
 
+Requires opencode 2. The plugin targets the V2 plugin API (`@opencode/plugin`)
+and does not load in V1.
+
 ```bash
-# build
 cd opencode-claude-memory
 npm install && npm run build
-
-# link into opencode's local plugin directory
-mkdir -p ~/.config/opencode/plugins
-ln -sf "$PWD/dist/index.js" ~/.config/opencode/plugins/opencode-claude-memory.js
 ```
 
-Restart opencode. The plugin is picked up automatically from `~/.config/opencode/plugins/`.
+Declare it in `~/.config/opencode/opencode.jsonc`:
+
+```jsonc
+{
+  "plugins": [
+    { "package": "file:///absolute/path/to/opencode-claude-memory/dist" }
+  ]
+}
+```
+
+The path points at `dist`, not at the repo root: for a local package opencode
+resolves `<directory>/index` or `<directory>/server` by path, and does not read
+`main` from `package.json`. Restart opencode, or let the watcher pick up a
+rebuild of `dist/`.
 
 ## Usage
 
