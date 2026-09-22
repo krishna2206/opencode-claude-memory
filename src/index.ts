@@ -115,7 +115,11 @@ export default Plugin.define({
           "List all saved memories with their names, types, and descriptions. " +
           "Use this to check what memories exist before saving a new one (to avoid duplicates) " +
           "or when you need to recall what's been stored.",
-        input: Schema.Struct({}),
+        // Schema.Struct({}) emits { anyOf: [{type:"object"},{type:"array"}] },
+        // which has no top-level `type` and Anthropic rejects outright
+        // ("input_schema.type: Field required"). A no-argument tool states its
+        // JSON Schema directly — Tool.ValueSchema accepts one.
+        input: { type: "object", properties: {}, additionalProperties: false },
         execute: async () => {
           const entries = listMemories(memoryRoot)
           if (entries.length === 0) return { content: "No memories saved yet." }
