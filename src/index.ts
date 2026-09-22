@@ -52,6 +52,7 @@ export default Plugin.define({
     await ctx.tool.transform((tools) => {
       tools.add({
         name: "memory_save",
+        options: { codemode: false },
         description:
           "Save or update a memory for future conversations. " +
           "Each memory is stored as a markdown file with frontmatter. " +
@@ -93,6 +94,7 @@ export default Plugin.define({
 
       tools.add({
         name: "memory_delete",
+        options: { codemode: false },
         description:
           "Delete a memory that is outdated, wrong, or no longer relevant. Also removes it from the index.",
         input: Schema.Struct({ file_name: FileName }),
@@ -108,6 +110,7 @@ export default Plugin.define({
 
       tools.add({
         name: "memory_list",
+        options: { codemode: false },
         description:
           "List all saved memories with their names, types, and descriptions. " +
           "Use this to check what memories exist before saving a new one (to avoid duplicates) " +
@@ -126,6 +129,7 @@ export default Plugin.define({
 
       tools.add({
         name: "memory_search",
+        options: { codemode: false },
         description:
           "Search memories by keyword. Searches across names, descriptions, and content. " +
           "Use this to find relevant memories before answering questions or when the user references past conversations.",
@@ -154,6 +158,7 @@ export default Plugin.define({
 
       tools.add({
         name: "memory_read",
+        options: { codemode: false },
         description:
           "Read the full content of a specific memory file. " +
           "Use this to get the complete details of a memory found via memory_list or memory_search.",
