@@ -156,11 +156,6 @@ export function getMemoryEntrypoint(worktree: string): string {
   return join(getMemoryDir(worktree), ENTRYPOINT_NAME)
 }
 
-export function isMemoryPath(absolutePath: string, worktree: string): boolean {
-  const memDir = getMemoryDir(worktree)
-  return absolutePath.startsWith(memDir)
-}
-
 export function ensureDir(dir: string): void {
   if (!existsSync(dir)) {
     mkdirSync(dir, { recursive: true })

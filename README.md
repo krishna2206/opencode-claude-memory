@@ -10,10 +10,10 @@ Unlike other memory plugins, it has no shell wrapper, no `.zshrc` hook, and no b
 
 ## How it works
 
-- On the first turn of a session, the memory guide + a snapshot of `MEMORY.md` are injected into the system prompt. The same text is reused on every following turn, so the system prompt prefix stays byte-identical — preserving harness and provider prefix caching.
+- On the first turn of a session, the memory guide, the `user` and `feedback` memories inlined as active rules (up to ~14 KB), and a snapshot of `MEMORY.md` are injected into the system prompt. The same text is reused on every following turn, so the system prompt prefix stays byte-identical, preserving harness and provider prefix caching. A session idle for an hour gets a fresh snapshot.
 - Five tools give the agent full read/write access to memory: `memory_save`, `memory_delete`, `memory_list`, `memory_search`, `memory_read`.
 - `memory_save` / `memory_delete` keep the `MEMORY.md` index in sync automatically.
-- The static guide teaches the agent when to save, what not to save, and to proactively propose memory updates during long sessions.
+- The static guide teaches the agent the memory types, when to save and what not to save.
 
 ## Install
 

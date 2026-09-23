@@ -2,7 +2,6 @@ import { Plugin } from "@opencode/plugin"
 import { Schema } from "effect"
 import { buildMemorySystemPrompt } from "./prompt.js"
 import { createPromptCache } from "./prompt-cache.js"
-import { getMemoryDir } from "./paths.js"
 import {
   saveMemory,
   deleteMemory,
@@ -10,18 +9,7 @@ import {
   searchMemories,
   readMemory,
   MEMORY_TYPES,
-  type MemoryType,
 } from "./memory.js"
-import { resolve, parse } from "path"
-
-function isRootPath(path: string): boolean {
-  return resolve(path) === parse(path).root
-}
-
-function resolveMemoryRoot(worktree: string, directory: string): string {
-  if (isRootPath(worktree) && !isRootPath(directory)) return directory
-  return worktree
-}
 
 const promptCache = createPromptCache()
 
@@ -32,10 +20,10 @@ const FileName = Schema.String.annotate({
 export default Plugin.define({
   id: "claude-memory",
   setup: async (ctx) => {
-    // V1 received worktree and directory as arguments; V2 carries both on the
-    // active Location, where `project.directory` is the repository root.
-    const memoryRoot = resolveMemoryRoot(ctx.location.project.directory, ctx.location.directory)
-    getMemoryDir(memoryRoot)
+    // The project root of the active location: the repository root in a git
+    // repository, the directory itself otherwise. Memory is keyed by it, the
+    // same way Claude Code keys ~/.claude/projects/<project>/memory.
+    const memoryRoot = ctx.location.project.directory
 
     await ctx.session.hook("context", (event) => {
       const memoryPrompt = promptCache.get(event.sessionID, () => buildMemorySystemPrompt(memoryRoot))
@@ -78,7 +66,7 @@ export default Plugin.define({
             input.file_name,
             input.name,
             input.description,
-            input.type as MemoryType,
+            input.type,
             input.content,
           )
           return { content: `Memory saved to ${filePath}`, metadata: { path: filePath } }
@@ -170,4 +158,3 @@ export default Plugin.define({
   },
 })
 
-export type { MemoryType }

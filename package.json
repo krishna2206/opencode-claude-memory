@@ -33,7 +33,7 @@
   ],
   "license": "MIT",
   "devDependencies": {
-    "@opencode/plugin": "^2.0.14",
+    "@opencode/plugin": "2.0.15",
     "@types/node": "^26.1.2",
     "typescript": "^6.0.3"
   },

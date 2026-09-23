@@ -28,18 +28,9 @@ const WHAT_NOT_TO_SAVE = [
   "- Ephemeral session state, temporary bugs, or in-progress tasks.",
 ].join("\n")
 
-export type BuildMemorySystemPromptOptions = {
-  includeIndex?: boolean
-}
-
-export function buildMemorySystemPrompt(
-  worktree: string,
-  recalledMemoriesSection?: string,
-  options: BuildMemorySystemPromptOptions = {},
-): string {
+export function buildMemorySystemPrompt(worktree: string): string {
   const memoryDir = getMemoryDir(worktree)
   const indexContent = readIndex(worktree)
-  const includeIndex = options.includeIndex ?? true
 
   const activeRules = getActiveRulesInline(worktree)
 
@@ -72,22 +63,16 @@ export function buildMemorySystemPrompt(
     )
   }
 
-  if (includeIndex) {
-    if (indexContent.trim()) {
-      const { content: truncated } = truncateEntrypoint(indexContent)
-      lines.push("", `## ${ENTRYPOINT_NAME} (Topic Index)`, "", truncated)
-    } else {
-      lines.push(
-        "",
-        `## ${ENTRYPOINT_NAME} (Topic Index)`,
-        "",
-        `Your ${ENTRYPOINT_NAME} is currently empty. When you save new memories, they will appear here.`,
-      )
-    }
-  }
-
-  if (recalledMemoriesSection?.trim()) {
-    lines.push("", recalledMemoriesSection)
+  if (indexContent.trim()) {
+    const { content: truncated } = truncateEntrypoint(indexContent)
+    lines.push("", `## ${ENTRYPOINT_NAME} (Topic Index)`, "", truncated)
+  } else {
+    lines.push(
+      "",
+      `## ${ENTRYPOINT_NAME} (Topic Index)`,
+      "",
+      `Your ${ENTRYPOINT_NAME} is currently empty. When you save new memories, they will appear here.`,
+    )
   }
 
   return lines.join("\n")

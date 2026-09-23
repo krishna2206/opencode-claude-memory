@@ -22,7 +22,6 @@ export type MemoryEntry = {
   description: string
   type: MemoryType
   content: string
-  rawContent: string
 }
 
 function parseFrontmatter(raw: string): { frontmatter: Record<string, string>; content: string } {
@@ -97,10 +96,9 @@ export function listMemories(worktree: string): MemoryEntry[] {
         description: frontmatter.description ?? "",
         type: parseMemoryType(frontmatter.type) ?? "user",
         content,
-        rawContent,
       })
     } catch {
-      
+      // Unreadable or malformed file: left out of the listing.
     }
   }
 
@@ -122,7 +120,6 @@ export function readMemory(worktree: string, fileName: string): MemoryEntry | nu
       description: frontmatter.description ?? "",
       type: parseMemoryType(frontmatter.type) ?? "user",
       content,
-      rawContent,
     }
   } catch {
     return null
