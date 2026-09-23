@@ -1,6 +1,7 @@
 import { Plugin } from "@opencode/plugin"
 import { Schema } from "effect"
 import { buildMemorySystemPrompt } from "./prompt.js"
+import { createPromptCache } from "./prompt-cache.js"
 import { getMemoryDir } from "./paths.js"
 import {
   saveMemory,
@@ -22,11 +23,7 @@ function resolveMemoryRoot(worktree: string, directory: string): string {
   return worktree
 }
 
-// The injected memory prompt is built once per session and reused on every
-// turn, so the system prompt prefix stays byte-identical across turns.
-// This preserves harness + provider prefix caching instead of invalidating it
-// on each message (the failure mode of per-turn recall injection).
-const injectedPromptBySession = new Map<string, string>()
+const promptCache = createPromptCache()
 
 const FileName = Schema.String.annotate({
   description: "File name of the memory (with or without .md extension)",
@@ -41,11 +38,7 @@ export default Plugin.define({
     getMemoryDir(memoryRoot)
 
     await ctx.session.hook("context", (event) => {
-      let memoryPrompt = injectedPromptBySession.get(event.sessionID)
-      if (memoryPrompt === undefined) {
-        memoryPrompt = buildMemorySystemPrompt(memoryRoot)
-        injectedPromptBySession.set(event.sessionID, memoryPrompt)
-      }
+      const memoryPrompt = promptCache.get(event.sessionID, () => buildMemorySystemPrompt(memoryRoot))
       event.system.push({ type: "text", text: memoryPrompt })
     })
 
