@@ -18,7 +18,7 @@ const FileName = Schema.String.annotate({
 })
 
 export default Plugin.define({
-  id: "claude-memory",
+  id: "opencode-claude-memory",
   setup: async (ctx) => {
     // The project root of the active location: the repository root in a git
     // repository, the directory itself otherwise. Memory is keyed by it, the
